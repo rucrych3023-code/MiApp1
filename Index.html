@@ -1,0 +1,825 @@
+  <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Amigo Dumpling</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+    }
+    body {
+      background-color: #fff0f5;
+      margin: 0;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background-color 1s ease;
+    }
+    body.night-mode {
+      background-color: #1a1a2e;
+      color: #fff;
+    }
+
+    /* Modales */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+    .modal-box {
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 320px;
+      width: 90%;
+      color: #333;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .modal-box input {
+      width: 80%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid #ffb7c5;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 450px;
+      margin-bottom: 8px;
+    }
+    .badge {
+      background: #ffe4e1;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      color: #d63384;
+    }
+    body.night-mode .badge {
+      background: #16213e;
+      color: #e94560;
+    }
+
+    /* Barra de Ventas / Desbloqueo */
+    .sales-bar {
+      width: 100%;
+      max-width: 450px;
+      background: #fff3cd;
+      border: 2px solid #ffeeba;
+      color: #856404;
+      padding: 10px 15px;
+      border-radius: 15px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 10px;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* Navegación (Ubicada ARRIBA de Dumpling) */
+    .nav-tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      max-width: 450px;
+    }
+    .nav-btn {
+      background: #fff;
+      border: 2px solid #ffb7c5;
+      padding: 8px 12px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #d63384;
+    }
+    .nav-btn.active {
+      background: #ffb7c5;
+      color: white;
+    }
+
+    /* Dumpling Avatar Rediseñado con Pastelitos Decorativos */
+    .dumpling-frame {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 5px 0 10px 0;
+    }
+    .cupcake-decoration {
+      font-size: 38px;
+      animation: floatCupcake 2.5s ease-in-out infinite alternate;
+      user-select: none;
+    }
+    .cupcake-decoration.right {
+      animation-delay: 1.25s;
+    }
+    @keyframes floatCupcake {
+      0% { transform: translateY(0px) rotate(-5deg); }
+      100% { transform: translateY(-10px) rotate(5deg); }
+    }
+
+    .dumpling-container {
+      position: relative;
+      width: 200px;
+      height: 180px;
+      cursor: pointer;
+    }
+    .dumpling-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.1));
+    }
+
+    /* Estado / Habla */
+    .status-badge {
+      background: #fff;
+      padding: 12px 18px;
+      border-radius: 18px;
+      margin: 10px 0 15px 0;
+      text-align: center;
+      max-width: 420px;
+      border: 2px dashed #ffb7c5;
+      cursor: pointer;
+      color: #333;
+      font-weight: 500;
+    }
+
+    /* Secciones de Contenido */
+    .tab-content {
+      display: none;
+      width: 100%;
+      max-width: 450px;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Tarjetas y Contenido */
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 10px;
+      color: #333;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      position: relative;
+    }
+    .btn-main {
+      background: #ffb7c5;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Bloqueo para versión gratuita */
+    .locked-feature {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .lock-banner {
+      background: #fff3cd;
+      border: 1px solid #ffeeba;
+      color: #856404;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    /* Paleta de colores */
+    .color-picker {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin: 10px 0;
+      flex-wrap: wrap;
+    }
+    .color-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    /* Cuentos Ilustrados */
+    .story-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 12px;
+    }
+    .story-thumb {
+      width: 70px;
+      height: 70px;
+      border-radius: 12px;
+      background: #ffe4e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Juegos */
+    .game-instruction {
+      text-align: center;
+      color: #d63384;
+      font-weight: bold;
+      font-size: 15px;
+      margin-bottom: 10px;
+      background: #fff0f5;
+      padding: 8px;
+      border-radius: 10px;
+    }
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .memory-card {
+      background: #ffb7c5;
+      height: 70px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      color: white;
+    }
+    .memory-card.matched {
+      background: #a8e6cf;
+    }
+    .lottery-card {
+      background: #ffd3b6;
+      font-size: 55px;
+      font-weight: bold;
+      text-align: center;
+      padding: 20px;
+      border-radius: 15px;
+      margin: 10px 0;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Modal de Nombre Inicial -->
+  <div id="welcome-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h2>¡Hola! 🥟</h2>
+      <p>¿Cómo te llamas?</p>
+      <input type="text" id="child-name-input" placeholder="Tu nombre aquí">
+      <br>
+      <button class="btn-main" onclick="saveChildName()">¡Empezar a Jugar!</button>
+    </div>
+  </div>
+
+  <!-- Modal de Control Parental / Pago -->
+  <div id="parent-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+      <h2>Zona de Padres 🔒</h2>
+      <p>Desbloquea todas las canciones, cuentos, alimentos y juegos por $10 MXN.</p>
+      <button class="btn-main" onclick="unlockAll()" style="background:#28a745; margin-bottom:10px;">Simular Pago ($10 MXN)</button>
+      <br>
+      <button class="btn-main" onclick="closeParentModal()" style="background:#dc3545;">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Barra Superior -->
+  <div class="top-bar">
+    <div class="badge d-name">Dumpling</div>
+    <div class="badge" id="clock">00:00:00</div>
+  </div>
+
+  <!-- 1. Barra de Ventas Arriba de Dumpling -->
+  <div class="sales-bar" id="sales-bar" onclick="openParentModal()">
+    🔒 Desbloquea la versión completa por $10 MXN
+  </div>
+
+  <!-- 2. Botones de Navegación (Cuidado, Canta, Cuentos, Juegos) Arriba de Dumpling -->
+  <div class="nav-tabs">
+    <button class="nav-btn active" onclick="switchTab('care', event)">🏠 Cuidado</button>
+    <button class="nav-btn" onclick="switchTab('songs', event)">🎵 Canta</button>
+    <button class="nav-btn" onclick="switchTab('stories', event)">📚 Cuentos</button>
+    <button class="nav-btn" onclick="switchTab('games', event)">🎮 Juegos</button>
+  </div>
+
+  <!-- 3. Marco Decorativo con Pastelitos y Dumpling -->
+  <div class="dumpling-frame">
+    <div class="cupcake-decoration">🧁</div>
+
+    <div class="dumpling-container" onclick="petDumpling()">
+      <svg class="dumpling-svg" viewBox="0 0 200 180">
+        <!-- Cuerpo del Dumpling -->
+        <path id="dumpling-body" d="M 100,20 C 105,10 110,25 120,35 C 150,45 185,80 180,125 C 175,160 145,168 100,168 C 55,168 25,160 20,125 C 15,80 50,45 80,35 C 90,25 95,10 100,20 Z" fill="#ffb7c5"/>
+        
+        <!-- Pliegues del Bao superiores -->
+        <path id="dumpling-folds" d="M 100,22 C 92,35 80,48 70,55 M 100,22 C 100,38 100,52 100,60 M 100,22 C 108,35 120,48 130,55" stroke="#f29bb0" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+
+        <!-- Ojos Despiertos Kawaii con destellos -->
+        <g id="eyes-awake">
+          <circle cx="70" cy="110" r="12" fill="#2d2d2d"/>
+          <circle cx="130" cy="110" r="12" fill="#2d2d2d"/>
+          <circle cx="66" cy="106" r="4" fill="#ffffff"/>
+          <circle cx="126" cy="106" r="4" fill="#ffffff"/>
+          <circle cx="73" cy="113" r="2" fill="#ffffff"/>
+          <circle cx="133" cy="113" r="2" fill="#ffffff"/>
+        </g>
+
+        <!-- Ojos Dormidos -->
+        <g id="eyes-asleep" style="display:none;">
+          <path d="M 58,110 Q 70,122 82,110" stroke="#2d2d2d" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M 118,110 Q 130,122 142,110" stroke="#2d2d2d" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </g>
+
+        <!-- Boca Sonriente -->
+        <path d="M 90,124 Q 100,136 110,124" stroke="#2d2d2d" stroke-width="3.5" fill="#2d2d2d" stroke-linecap="round"/>
+
+        <!-- Cachetes Rosados -->
+        <ellipse cx="52" cy="122" rx="10" ry="7" fill="#ff6b8b" opacity="0.65"/>
+        <ellipse cx="148" cy="122" rx="10" ry="7" fill="#ff6b8b" opacity="0.65"/>
+      </svg>
+    </div>
+
+    <div class="cupcake-decoration right">🧁</div>
+  </div>
+
+  <!-- Globito de Estado y Voz -->
+  <div class="status-badge" id="status-badge" onclick="speakStatus()">
+    ¡Tócame para interactuar!
+  </div>
+
+  <!-- Pestaña Cuidado -->
+  <div id="tab-care" class="tab-content active">
+    <div class="card">
+      <h3>Cambiar Nombre</h3>
+      <input type="text" id="dumpling-name" placeholder="Nuevo nombre" style="padding: 5px; border-radius: 8px; border: 1px solid #ccc;">
+      <button class="btn-main" onclick="updateName()">Guardar</button>
+    </div>
+
+    <div class="card">
+      <h3>Color de Dumpling</h3>
+      <div class="color-picker">
+        <div class="color-dot" style="background: #ffb7c5;" onclick="changeColor('#ffb7c5', '#f29bb0', 'Rosa')"></div>
+        <div class="color-dot" style="background: #ff6b6b;" onclick="changeColor('#ff6b6b', '#d94b4b', 'Rojo')"></div>
+        <div class="color-dot" style="background: #74b9ff;" onclick="changeColor('#74b9ff', '#4b93d9', 'Azul')"></div>
+        <div class="color-dot" style="background: #ffeaa7;" onclick="changeColor('#ffeaa7', '#d9c574', 'Amarillo')"></div>
+        <div class="color-dot" style="background: #a8e6cf;" onclick="changeColor('#a8e6cf', '#74c4a8', 'Verde Menta')"></div>
+        <div class="color-dot" style="background: #d6a2e8;" onclick="changeColor('#d6a2e8', '#b073c4', 'Morado')"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Alimentar</h3>
+      <div class="lock-banner" onclick="openParentModal()">🔒 Desbloquea la comida por $10 MXN</div>
+      <div class="locked-feature" style="display:flex; justify-content:space-around; font-size:30px;">
+        <span style="cursor:pointer" onclick="feed('🍎', 'Manzana')">🍎</span>
+        <span style="cursor:pointer" onclick="feed('🍼', 'Lechita')">🍼</span>
+        <span style="cursor:pointer" onclick="feed('🥦', 'Brócoli')">🥦</span>
+        <span style="cursor:pointer" onclick="feed('🍪', 'Galleta')">🍪</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pestaña Canciones -->
+  <div id="tab-songs" class="tab-content">
+    <div class="card">
+      <h3>🎵 Canciones Cantadas</h3>
+      <div class="lock-banner" onclick="openParentModal()">🔒 Desbloquea todas las canciones por $10 MXN</div>
+      
+      <div class="locked-feature">
+        <div style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+          <strong>⭐ Estrellita, ¿Dónde Estás?</strong>
+          <p style="font-size: 12px; color: #666; margin: 5px 0;">Estrellita ¿dónde estás? Quiero verte titilar. En el cielo sobre el mar, un diamante de verdad...</p>
+          <button class="btn-main" onclick="singSong('estrellita')">Cantar 🔊</button>
+        </div>
+
+        <div style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+          <strong>🦭 La Foca Ramona</strong>
+          <p style="font-size: 12px; color: #666; margin: 5px 0;">La foca Ramona trabaja en un circo, con una pelota grande y pesada...</p>
+          <button class="btn-main" onclick="singSong('foca')">Cantar 🔊</button>
+        </div>
+
+        <div style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+          <strong>🐮 La Vaca Lola</strong>
+          <p style="font-size: 12px; color: #666; margin: 5px 0;">La vaca Lola, la vaca Lola, tiene cabeza y tiene cola, y hace ¡Muuu!...</p>
+          <button class="btn-main" onclick="singSong('vaca')">Cantar 🔊</button>
+        </div>
+
+        <div>
+          <strong>🐸 Cú-cú Cantaba la Rana</strong>
+          <p style="font-size: 12px; color: #666; margin: 5px 0;">Cú-cú, cú-cú, cantaba la rana. Cú-cú, cú-cú, debajo del agua...</p>
+          <button class="btn-main" onclick="singSong('rana')">Cantar 🔊</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pestaña Cuentos -->
+  <div id="tab-stories" class="tab-content">
+    <div class="card">
+      <h3>📚 Cuentos para Dormir y Jugar</h3>
+      <div class="lock-banner" onclick="openParentModal()">🔒 Desbloquea todos los cuentos por $10 MXN</div>
+      
+      <div class="locked-feature">
+        <div class="story-card">
+          <div class="story-thumb">
+            <svg viewBox="0 0 100 100" style="width:50px; height:50px;">
+              <path d="M 50,15 C 60,18 90,40 85,70 C 80,90 65,92 50,92 C 35,92 20,90 15,70 C 10,40 40,18 50,15 Z" fill="#ffb7c5"/>
+              <circle cx="38" cy="55" r="5" fill="#2d2d2d"/>
+              <circle cx="62" cy="55" r="5" fill="#2d2d2d"/>
+              <path d="M 45,65 Q 50,72 55,65" stroke="#2d2d2d" stroke-width="2" fill="none"/>
+              <text x="50" y="32" font-size="16" text-anchor="middle">🏰</text>
+            </svg>
+          </div>
+          <div>
+            <strong>🏰 El Castillo de Nube</strong>
+            <p style="font-size: 12px; color: #666; margin: 4px 0;">Dumpling viaja al cielo para construir un castillo esponjoso entre las nubes con sus amigos.</p>
+            <button class="btn-main" onclick="tellStory('castillo')">Escuchar Cuento 🔊</button>
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-thumb">
+            <svg viewBox="0 0 100 100" style="width:50px; height:50px;">
+              <path d="M 50,15 C 60,18 90,40 85,70 C 80,90 65,92 50,92 C 35,92 20,90 15,70 C 10,40 40,18 50,15 Z" fill="#ffb7c5"/>
+              <circle cx="38" cy="55" r="5" fill="#2d2d2d"/>
+              <circle cx="62" cy="55" r="5" fill="#2d2d2d"/>
+              <path d="M 45,65 Q 50,72 55,65" stroke="#2d2d2d" stroke-width="2" fill="none"/>
+              <text x="50" y="32" font-size="16" text-anchor="middle">🍓</text>
+            </svg>
+          </div>
+          <div>
+            <strong>🧺 El Pícnic en el Bosque</strong>
+            <p style="font-size: 12px; color: #666; margin: 4px 0;">Un hermoso día donde Dumpling comparte fresitas, pastelitos y cupcakes al aire libre.</p>
+            <button class="btn-main" onclick="tellStory('picnic')">Escuchar Cuento 🔊</button>
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-thumb">
+            <svg viewBox="0 0 100 100" style="width:50px; height:50px;">
+              <path d="M 50,15 C 60,18 90,40 85,70 C 80,90 65,92 50,92 C 35,92 20,90 15,70 C 10,40 40,18 50,15 Z" fill="#ffb7c5"/>
+              <circle cx="38" cy="55" r="5" fill="#2d2d2d"/>
+              <circle cx="62" cy="55" r="5" fill="#2d2d2d"/>
+              <path d="M 45,65 Q 50,72 55,65" stroke="#2d2d2d" stroke-width="2" fill="none"/>
+              <text x="50" y="32" font-size="16" text-anchor="middle">🌙</text>
+            </svg>
+          </div>
+          <div>
+            <strong>🐰 El Conejito y la Luna</strong>
+            <p style="font-size: 12px; color: #666; margin: 4px 0;">Dumpling ayuda a un conejito a tocar las estrellas construyendo una gran torre de cojines.</p>
+            <button class="btn-main" onclick="tellStory('conejito')">Escuchar Cuento 🔊</button>
+          </div>
+        </div>
+
+        <div class="story-card" style="border:none; padding-bottom:0;">
+          <div class="story-thumb">
+            <svg viewBox="0 0 100 100" style="width:50px; height:50px;">
+              <path d="M 50,15 C 60,18 90,40 85,70 C 80,90 65,92 50,92 C 35,92 20,90 15,70 C 10,40 40,18 50,15 Z" fill="#ffb7c5"/>
+              <circle cx="38" cy="55" r="5" fill="#2d2d2d"/>
+              <circle cx="62" cy="55" r="5" fill="#2d2d2d"/>
+              <path d="M 45,65 Q 50,72 55,65" stroke="#2d2d2d" stroke-width="2" fill="none"/>
+              <text x="50" y="32" font-size="16" text-anchor="middle">⏰</text>
+            </svg>
+          </div>
+          <div>
+            <strong>⏰ El Reloj Mágico</strong>
+            <p style="font-size: 12px; color: #666; margin: 4px 0;">Un reloj especial que hace cosquillas y avisa a Dumpling cuando es hora de cantar y bailar.</p>
+            <button class="btn-main" onclick="tellStory('reloj')">Escuchar Cuento 🔊</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Pestaña Juegos -->
+  <div id="tab-games" class="tab-content">
+    <div class="card">
+      <h3>🎮 Mini Juegos</h3>
+      <div class="lock-banner" onclick="openParentModal()">🔒 Desbloquea los juegos por $10 MXN</div>
+      
+      <div class="locked-feature">
+        <div style="display: flex; gap: 5px; margin-bottom: 15px; justify-content: center;">
+          <button class="btn-main" onclick="loadGame('memory')">🧠 Memoria</button>
+          <button class="btn-main" onclick="loadGame('letters')">🔤 Letras</button>
+          <button class="btn-main" onclick="loadGame('numbers')">🔢 Números</button>
+        </div>
+
+        <div id="game-area">
+          <p style="text-align: center; color: #777;">Selecciona un juego arriba para empezar.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let isPaid = false;
+    let childName = "amiguito";
+    let currentName = "Dumpling";
+    let currentColor = "#ffb7c5";
+    let currentStatusText = "";
+    let currentRoutineState = "";
+
+    let firstCard = null, secondCard = null, lockBoard = false, matchedPairs = 0;
+
+    function saveChildName() {
+      const input = document.getElementById('child-name-input').value.trim();
+      if (input !== "") childName = input;
+      document.getElementById('welcome-modal').style.display = 'none';
+      updateStatus(`¡Hola ${childName}! Soy tu amigo ${currentName}. ¡Vamos a jugar!`);
+    }
+
+    function speak(text, pitch = 1.4, speed = 0.85) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-MX';
+        utterance.pitch = pitch;
+        utterance.rate = speed;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+
+      document.getElementById('clock').innerText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+      if (hours >= 20 || hours < 6) {
+        document.body.classList.add('night-mode');
+        document.getElementById('eyes-awake').style.display = 'none';
+        document.getElementById('eyes-asleep').style.display = 'block';
+
+        if (currentRoutineState !== 'night') {
+          currentRoutineState = 'night';
+          updateStatus(`¡Hola ${childName}! Ya son las 8 de la noche y es hora de dormir. Me bañaré y lavaré los dientes. ¡Hasta mañana!`);
+        }
+      } else {
+        document.body.classList.remove('night-mode');
+        document.getElementById('eyes-awake').style.display = 'block';
+        document.getElementById('eyes-asleep').style.display = 'none';
+
+        if (currentRoutineState !== 'morning') {
+          currentRoutineState = 'morning';
+          updateStatus(`¡Buenos días ${childName}! Ya son las 6 de la mañana. ¡Estoy listo para jugar!`);
+        }
+      }
+    }
+    setInterval(updateClock, 1000);
+
+    function updateName() {
+      currentName = document.getElementById('dumpling-name').value || "Dumpling";
+      document.querySelectorAll('.d-name').forEach(el => el.innerText = currentName);
+      updateStatus(`¡Hola ${childName}! Mi nombre es ${currentName}`);
+    }
+
+    function updateStatus(text) {
+      currentStatusText = text;
+      document.getElementById('status-badge').innerText = text + " 🔊";
+      speak(text);
+    }
+
+    function speakStatus() {
+      if (currentStatusText) speak(currentStatusText);
+    }
+
+    function switchTab(tabId, evt) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      if (evt) evt.target.classList.add('active');
+
+      if (tabId === 'games' && isPaid) {
+        loadGame('memory');
+      }
+    }
+
+    function petDumpling() {
+      const hours = new Date().getHours();
+      if (hours >= 20 || hours < 6) {
+        updateStatus(`${currentName} está durmiendo profundamente... Shhh ${childName}. 😴`);
+      } else {
+        const phrases = [
+          `¡Me das mucha risa ${childName}! Soy ${currentName}.`,
+          `¡Te quiero mucho ${childName}!`,
+          `¡Eso me da cosquillas, ${childName}!`
+        ];
+        updateStatus(phrases[Math.floor(Math.random() * phrases.length)]);
+      }
+    }
+
+    function changeColor(fillHex, foldHex, colorName) {
+      currentColor = fillHex;
+      document.getElementById('dumpling-body').setAttribute('fill', fillHex);
+      if (foldHex) {
+        document.getElementById('dumpling-folds').setAttribute('stroke', foldHex);
+      }
+      updateStatus(`¡Mira ${childName}, ahora soy de color ${colorName}!`);
+      document.querySelectorAll('.mini-dumpling-body').forEach(el => el.setAttribute('fill', currentColor));
+    }
+
+    function feed(foodIcon, foodName) {
+      if (!isPaid) return;
+      updateStatus(`¡Mmm! ¡Qué rico ${foodName}! Muchas gracias, ${childName}.`);
+    }
+
+    function singSong(type) {
+      if (!isPaid) return;
+      const songData = {
+        'estrellita': "Estrellita ¿dónde estás? Quiero verte titilar. En el cielo sobre el mar, un diamante de verdad. Estrellita ¿dónde estás? Quiero verte titilar.",
+        'foca': "La foca Ramona trabaja en un circo, con un pelota grande y pesada. La tira hacia arriba, la tira hacia abajo, se sienta y saluda y come pescado.",
+        'vaca': "La vaca Lola, la vaca Lola, tiene cabeza y tiene cola, y hace ¡Muuu!",
+        'rana': "Cú-cú, cú-cú, cantaba la rana. Cú-cú, cú-cú, debajo del agua. Cú-cú, cú-cú, pasó un caballero. Cú-cú, cú-cú, de capa y sombrero."
+      };
+      if (songData[type]) speak(songData[type], 1.5, 0.8);
+    }
+
+    function tellStory(type) {
+      if (!isPaid) return;
+      const stories = {
+        'castillo': `Había una vez un pequeño bao muy esponjoso llamado ${currentName}. Un día, ${currentName} y ${childName} encontraron un castillo hecho de nube y algodón...`,
+        'picnic': `${currentName} organizó un pícnic en el bosque para jugar con ${childName}. Llevó fresas rojas y sandías dulces...`,
+        'conejito': `Un conejito blanco quería tocar la Luna. ${currentName} y ${childName} le ayudaron haciendo una montaña de cojines...`,
+        'reloj': `En el bosque había un reloj mágico que no decía tic-tac, sino que hacía risitas. Cuando marcaba las doce, ${currentName} y ${childName} bailaban...`
+      };
+      if (stories[type]) speak(stories[type], 1.3, 0.85);
+    }
+
+    function getMiniDumplingSVG() {
+      return `
+        <div style="width:70px; height:60px; margin: 10px auto 0;">
+          <svg viewBox="0 0 200 180" style="width:100%; height:100%;">
+            <path class="mini-dumpling-body" d="M 100,20 C 105,10 110,25 120,35 C 150,45 185,80 180,125 C 175,160 145,168 100,168 C 55,168 25,160 20,125 C 15,80 50,45 80,35 C 90,25 95,10 100,20 Z" fill="${currentColor}"/>
+            <circle cx="70" cy="110" r="10" fill="#2d2d2d"/>
+            <circle cx="130" cy="110" r="10" fill="#2d2d2d"/>
+            <path d="M 90,125 Q 100,135 110,125" stroke="#2d2d2d" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+      `;
+    }
+
+    function loadGame(type) {
+      if (!isPaid) return;
+      const area = document.getElementById('game-area');
+      area.innerHTML = '';
+
+      if (type === 'memory') {
+        firstCard = null; secondCard = null; lockBoard = false; matchedPairs = 0;
+        speak(`Juego de memoria. ¡Encuentra las parejas, ${childName}!`);
+        const items = ['🍓', '🧁', '🍄', '⭐', '🍓', '🧁', '🍄', '⭐'].sort(() => 0.5 - Math.random());
+        let grid = document.createElement('div');
+        grid.className = 'game-grid';
+        
+        items.forEach(icon => {
+          let card = document.createElement('div');
+          card.className = 'memory-card';
+          card.dataset.icon = icon;
+          card.innerText = '❓';
+          card.onclick = () => handleMemoryClick(card);
+          grid.appendChild(card);
+        });
+        area.appendChild(grid);
+
+      } else if (type === 'letters') {
+        const letters = ['A', 'E', 'I', 'O', 'U', 'M', 'P', 'L', 'S', 'T'];
+        let rand = letters[Math.floor(Math.random() * letters.length)];
+        area.innerHTML = `
+          <div class="game-instruction">🗣️ ¡Escucha y repite conmigo!</div>
+          <div class="lottery-card" onclick="speakLetter('${rand}')">${rand} 🔊</div>
+          <button class="btn-main" onclick="loadGame('letters')" style="width:100%; padding:12px;">Cambiar Letra 🎲</button>
+          ${getMiniDumplingSVG()}
+        `;
+        speakLetter(rand);
+
+      } else if (type === 'numbers') {
+        let rand = Math.floor(Math.random() * 10) + 1;
+        area.innerHTML = `
+          <div class="game-instruction">🗣️ ¡Escucha y repite conmigo!</div>
+          <div class="lottery-card" onclick="speakNumber('${rand}')">${rand} 🔊</div>
+          <button class="btn-main" onclick="loadGame('numbers')" style="width:100%; padding:12px;">Cambiar Número 🎲</button>
+          ${getMiniDumplingSVG()}
+        `;
+        speakNumber(rand);
+      }
+    }
+
+    function speakLetter(letter) {
+      const phrases = [
+        `¡La letra es ${letter}! ¡Repite conmigo, ${letter}! ¡Lo haces excelente, ${childName}!`,
+        `¡A ver cómo dices la letra ${letter}! ¡Eso es, súper bien ${childName}!`,
+        `¡Genial! Repite bien fuerte: ${letter}. ¡Eres muy inteligente, ${childName}!`,
+        `¡Bravo ${childName}! La letra es ${letter}. ¡Lo estás haciendo fantástico!`,
+        `¡Qué bonita letra! Es la ${letter}. ¡Dila conmigo, ${letter}!`
+      ];
+      const selectedPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+      speak(selectedPhrase);
+    }
+
+    function speakNumber(number) {
+      const phrases = [
+        `El número es ${number}. ¡Repite conmigo, ${number}! ¡Muy bien, ${childName}!`,
+        `¡A contar! Este es el número ${number}. ¡Dilo bien fuerte, ${childName}!`,
+        `¡Qué bien pronuncias! Vamos con el número ${number}. ¡Eres increíble, ${childName}!`,
+        `¡Eso es, ${childName}! Repite conmigo: ${number}. ¡Sigue así, amiguito!`,
+        `¡Excelente! Este es el número ${number}. ¡Lo haces de maravilla!`
+      ];
+      const selectedPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+      speak(selectedPhrase);
+    }
+
+    function handleMemoryClick(card) {
+      if (lockBoard || card === firstCard || card.classList.contains('matched')) return;
+      card.innerText = card.dataset.icon;
+
+      if (!firstCard) {
+        firstCard = card;
+        return;
+      }
+
+      secondCard = card;
+      lockBoard = true;
+
+      if (firstCard.dataset.icon === secondCard.dataset.icon) {
+        firstCard.classList.add('matched');
+        secondCard.classList.add('matched');
+        matchedPairs++;
+        if (matchedPairs === 4) speak(`¡Ganaste ${childName}! ¡Lo hiciste excelente!`);
+        else speak(`¡Muy bien ${childName}!`);
+        resetMemoryTurn();
+      } else {
+        speak(`Inténtalo de nuevo, ${childName}`);
+        setTimeout(() => {
+          if (firstCard) firstCard.innerText = '❓';
+          if (secondCard) secondCard.innerText = '❓';
+          resetMemoryTurn();
+        }, 1200);
+      }
+    }
+
+    function resetMemoryTurn() {
+      firstCard = null; secondCard = null; lockBoard = false;
+    }
+
+    function openParentModal() { document.getElementById('parent-modal').style.display = 'flex'; }
+    function closeParentModal() { document.getElementById('parent-modal').style.display = 'none'; }
+
+    function unlockAll() {
+      isPaid = true;
+      closeParentModal();
+      document.querySelectorAll('.locked-feature').forEach(el => {
+        el.classList.remove('locked-feature');
+        el.style.opacity = '1';
+        el.style.pointerEvents = 'auto';
+      });
+      document.querySelectorAll('.lock-banner').forEach(el => el.style.display = 'none');
+      
+      const salesBar = document.getElementById('sales-bar');
+      if (salesBar) salesBar.style.display = 'none';
+
+      updateStatus(`¡Suscripción activada! Ya puedes disfrutar de las canciones, cuentos y juegos, ${childName}.`);
+    }
+
+    window.onload = () => { updateClock(); };
+  </script>
+</body>
+</html>
