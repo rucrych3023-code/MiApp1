@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -552,8 +552,20 @@
     let currentColor = "#ffb7c5";
     let currentStatusText = "";
     let currentRoutineState = "";
+    let voices = [];
 
     let firstCard = null, secondCard = null, lockBoard = false, matchedPairs = 0;
+
+    // Carga de voces nativas para móviles y tablets
+    function initVoices() {
+      if ('speechSynthesis' in window) {
+        voices = window.speechSynthesis.getVoices();
+      }
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = initVoices;
+      initVoices();
+    }
 
     function saveChildName() {
       const input = document.getElementById('child-name-input').value.trim();
@@ -564,11 +576,23 @@
 
     function speak(text, pitch = 1.4, speed = 0.85) {
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+        window.speechSynthesis.cancel(); // Detener cualquier reproducción previa
+        
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'es-MX';
         utterance.pitch = pitch;
         utterance.rate = speed;
+
+        if (voices.length === 0) {
+          voices = window.speechSynthesis.getVoices();
+        }
+        
+        // Priorizar voz en español
+        const spanishVoice = voices.find(v => v.lang.includes('es'));
+        if (spanishVoice) {
+          utterance.voice = spanishVoice;
+        }
+
         window.speechSynthesis.speak(utterance);
       }
     }
@@ -734,7 +758,7 @@
       } else if (type === 'numbers') {
         let rand = Math.floor(Math.random() * 10) + 1;
         area.innerHTML = `
-          <div class="game-instruction">🗣️ ¡Escucha y repite conmigo!</div>
+          <div class="game-instruction">🗣️️ ¡Escucha y repite conmigo!</div>
           <div class="lottery-card" onclick="speakNumber('${rand}')">${rand} 🔊</div>
           <button class="btn-main" onclick="loadGame('numbers')" style="width:100%; padding:12px;">Cambiar Número 🎲</button>
           ${getMiniDumplingSVG()}
