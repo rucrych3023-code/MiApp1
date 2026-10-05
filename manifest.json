@@ -1,0 +1,13 @@
+{
+  "background_color": "#d24557",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Mi amigo dompling",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Dompling",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "id": "Domplimg-app",
+  "description": "Aplicación interactiva de dumpling."
+}
