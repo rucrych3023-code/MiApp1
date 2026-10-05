@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.rucrych3023_code.twa",
+        "sha256_cert_fingerprints": ["33:C5:F3:6E:29:0E:BE:53:A4:A7:89:41:7F:BB:9F:EB:C7:CD:B8:7D:6A:55:79:1C:7D:F5:6A:88:26:40:49:79"]
+      }
+    }]
