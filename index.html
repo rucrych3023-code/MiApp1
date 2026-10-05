@@ -844,6 +844,13 @@
     }
 
     window.onload = () => { updateClock(); };
+    document.addEventListener('click', function() {
+  if ('speechSynthesis' in window) {
+    var despertar = new SpeechSynthesisUtterance('');
+    window.speechSynthesis.speak(despertar);
+  }
+}, { once: true });
+
   </script>
 </body>
 </html>
