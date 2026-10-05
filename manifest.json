@@ -4,21 +4,21 @@
   "display": "standalone",
   "name": "Mi amigo dompling",
   "orientation": "any",
-  "scope": "/",
+  "scope": "/MiApp1/",
   "short_name": "Dompling",
-  "start_url": "/",
+  "start_url": "/MiApp1/",
   "theme_color": "#ffffff",
   "id": "Dompling-app",
   "description": "Aplicación interactiva de dumpling.",
   "icons": [
     {
-      "src": "https://via.placeholder.com/192.png",
+      "src": "https://raw.githubusercontent.com/rucrych3023-code/MiApp1/main/icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://via.placeholder.com/512.png",
+      "src": "https://raw.githubusercontent.com/rucrych3023-code/MiApp1/main/icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
