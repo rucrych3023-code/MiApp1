@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "io.github.rucrych3023_code.twa",
-        "sha256_cert_fingerprints": ["33:C5:F3:6E:29:0E:BE:53:A4:A7:89:41:7F:BB:9F:EB:C7:CD:B8:7D:6A:55:79:1C:7D:F5:6A:88:26:40:49:79"]
+        "sha256_cert_fingerprints": ["E6:6F:15:14:11:E1:E5:BD:96:0E:31:4D:0E:A3:A0:76:05:EF:42:DB:11:AF:E3:75:52:99:45:F4:D6:28:68:C2"]
       }
     }]
